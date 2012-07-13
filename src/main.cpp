@@ -1,6 +1,5 @@
 #include "MD5Digest.h"
 #include "dbg.h"
-#include "md5.h"
 
 #include <openssl/md5.h>
 #include <string.h>

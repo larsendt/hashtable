@@ -126,6 +126,8 @@ MD5Digest::MD5Digest(const uchar *data, uint64_t size)
     memcpy(m_bytes+4, &h1, 4);
     memcpy(m_bytes+8, &h2, 4);
     memcpy(m_bytes+12, &h3, 4);
+    
+    delete[] fulldata;
 }
 
 
