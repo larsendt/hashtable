@@ -7,7 +7,7 @@ VERSION	= 0.1
 
 all: libhashtable.so hashtable-test
 
-hashtable-test: $(SRCDIR)/main.cpp $(SRCDIR)/MD5Digest.h $(SRCDIR)/HashTable.h $(SRCDIR)/md5.h libhashtable.so
+hashtable-test: $(SRCDIR)/main.cpp $(SRCDIR)/MD5Digest.h $(SRCDIR)/HashTable.h libhashtable.so
 	$(CC) $(SRCDIR)/main.cpp $(LFLAGS) $(CFLAGS) -o hashtable-test
 
 libhashtable.so: MD5Digest.o HashTable.o
