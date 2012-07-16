@@ -10,7 +10,8 @@ class HashTable
         HashTable();
 };
 
-HashTable::HashTable()
+template <class K, class V>
+HashTable<K, V>::HashTable()
 {
     debug("Key size: %d\n", sizeof(K));
     debug("Value size: %d\n", sizeof(V));
