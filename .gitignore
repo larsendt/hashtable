@@ -13,3 +13,6 @@
 
 # Executable
 hashtable-test
+
+# Vim swap files
+*.swp

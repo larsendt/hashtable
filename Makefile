@@ -1,7 +1,7 @@
 SRCDIR	= src
 OBJDIR	= obj
 CC 		= clang++
-CFLAGS	= -Wall -Wextra -g 
+CFLAGS	= -Wall -Wextra -g -DDEBUG 
 LFLAGS	= -L. -lhashtable -lcrypto
 VERSION	= 0.1
 
