@@ -2,7 +2,7 @@ SRCDIR	= src
 OBJDIR	= obj
 CC 		= clang++
 CFLAGS	= -Wall -Wextra -g -DDEBUG 
-LFLAGS	= -L. -lhashtable -lcrypto
+LFLAGS	= -L. -lhashtable -lcrypto 
 VERSION	= 0.1
 
 all: libhashtable.so hashtable-test

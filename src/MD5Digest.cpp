@@ -41,6 +41,7 @@ MD5Digest::MD5Digest(const uchar *data, uint64_t size)
                   0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
                   0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391 };
 
+    (void) T;
 
     uint n = ((size + 9) / 64) + 1;
     uint mdsize = n * 64;;

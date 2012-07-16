@@ -72,6 +72,7 @@
 
 #endif
 
-#define print_bits(c) printf("0b"); for(int i = ((sizeof(c)*8)-1); i >= 0; i--) printf("%x", (c>>i)&1); printf("\n");
+#define print_bits(c) fprintf(stderr, "0b"); for(int i = ((sizeof(c)*8)-1); i >= 0; i--) fprintf(stderr, "%x", (c>>i)&1); fprintf(stderr, "\n");
 
+#define delim() debug("==========================")
 #endif 
