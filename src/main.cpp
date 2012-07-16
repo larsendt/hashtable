@@ -1,6 +1,7 @@
 #include "MD5Digest.h"
 #include "HashTable.h"
 #include "dbg.h"
+#include "timer.h"
 
 #include <openssl/md5.h>
 #include <string.h>
@@ -12,25 +13,25 @@ int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
-
+/*
     const char *str = "this is a test message that will be hashed. ";
 
     MD5Digest d((const unsigned char*)str, strlen(str));
 
-    printf("     me: ");
+    fprintf(stderr, "     me: ");
     for(int i = 0; i < 16; i++)
     {
-        printf("%02x", d.bytes()[i]);
+        fprintf(stderr, "%02x", d.bytes()[i]);
     }
-    printf("\n");
+    fprintf(stderr, "\n");
 
     unsigned char *md5_hash = MD5((const unsigned char*)str, strlen(str), NULL);
-    printf("openssl: ");
+    fprintf(stderr, "openssl: ");
     for(int i = 0; i < MD5_DIGEST_LENGTH; i++)
     {
-        printf("%02x", md5_hash[i]);
+        fprintf(stderr, "%02x", md5_hash[i]);
     }
-    printf("\n");
+    fprintf(stderr, "\n");
 
     bool equal = true;
     for(int i = 0; i < 16; i++)
@@ -44,7 +45,7 @@ int main(int argc, char *argv[])
     else
        debug("openssl wins");
 
-    delim();
+    delim();*/
     debug("Hashtable test");
 
     delim();
@@ -52,6 +53,7 @@ int main(int argc, char *argv[])
     const char *key1 = "key1";
     const char *key2 = "key2";
     HashTable<const char*, int> hash;
+    
     hash.insert(key1, 5);
     hash.insert(key2, 6);
 
@@ -104,7 +106,12 @@ int main(int argc, char *argv[])
     int key_count = 10000;
     char **keys = new char*[key_count];
     int *values = new int[key_count];
+    long long int *timings = new long long int[key_count];
+
     srand(time(NULL));
+
+    long long int c1;
+    long long int c2;
 
     debug("Inserting %d k/v pairs", key_count);
     for(int i = 0; i < key_count; i++)
@@ -113,10 +120,28 @@ int main(int argc, char *argv[])
         values[i] = v;
         keys[i] = new char[33];
         sprintf(keys[i], "%x", v);
+        
+        getcycles(&c1);
         hash.insert(keys[i], v);
+        getcycles(&c2);
+
+        timings[i] = c2 - c1;
     }
 
+    double collision_ratio = (double)hash.collisions() / key_count;
     debug("Hash collisions: %d", hash.collisions());
+    debug("%.4f%% of insertions collided", collision_ratio*100);
+   
+    long long int sum = 0;
+    long long int avg;
+    for(int i = 0; i < key_count; i++)
+    {
+        sum += timings[i];
+    }
+
+    avg = sum / key_count;
+    debug("Average insertion took %lld cycles", avg);
+
     debug("Checking inserted k/v pairs");
 
     bool keys_okay = true;
@@ -145,6 +170,20 @@ int main(int argc, char *argv[])
         debug("HashTable::value() had all of the values");
     else
         debug("ERROR: HashTable::value() lost some values");
+
+    for(int i = 0; i < key_count; i++)
+    {
+       printf("%d %lld\n", i, timings[i]);
+    } 
+
+    for(int i = 0; i < key_count; i++)
+    {
+        delete[] keys[i];
+    }
+
+    delete[] keys;
+    delete[] values;
+    delete[] timings;
 }
 
 
