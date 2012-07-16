@@ -1,4 +1,5 @@
 #include "MD5Digest.h"
+#include "HashTable.h"
 #include "dbg.h"
 
 #include <openssl/md5.h>
@@ -46,5 +47,10 @@ int main(int argc, char *argv[])
        printf("i win\n");
     else
        printf("openssl wins\n");
+
+
+    debug("Hashtable test");
+
+    HashTable<char*, int> hash;
 
 }

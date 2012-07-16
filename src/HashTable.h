@@ -1,7 +1,9 @@
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 
-template <class T>
+#include "dbg.h"
+
+template <class K, class V>
 class HashTable
 {
     public:
@@ -10,7 +12,8 @@ class HashTable
 
 HashTable::HashTable()
 {
-
+    debug("Key size: %d\n", sizeof(K));
+    debug("Value size: %d\n", sizeof(V));
 }
 
 #endif

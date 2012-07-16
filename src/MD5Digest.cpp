@@ -18,7 +18,7 @@ void print_mdbuf(uchar *mdbuf, uint mdsize);
 
 MD5Digest::MD5Digest(const uchar *data, uint64_t size)
 {
-    debug("Message size: %d 0x%x", size, size);
+    debug("Message size: %lu 0x%lx", size, size);
     int a = 0x67452301;
     int b = 0xefcdab89;
     int c = 0x98badcfe;
