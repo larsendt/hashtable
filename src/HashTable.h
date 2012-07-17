@@ -173,7 +173,7 @@ template <class K, class V>
 unsigned int HashTable<K, V>::hashIndex(K key)
 {
     //TODO is this stupid?
-    unsigned char* md5_hash = MD5((const unsigned char*)key, sizeof(K), NULL);
+    unsigned char* md5_hash = MD5((const unsigned char*)(&key), sizeof(K), NULL);
 
     //TODO is this also really stupid?
     unsigned int index;
