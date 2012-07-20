@@ -1,5 +1,5 @@
 #include "MD5Digest.h"
-#include "HashTable.h"
+#include "CPPHashTable.h"
 #include "dbg.h"
 #include "timer.h"
 #include "test.h"
