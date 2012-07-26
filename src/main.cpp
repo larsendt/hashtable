@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     testHash3();
     delim();
 
-    debug("Test results: \n\t" GREEN("%d successes\n\t") RED("%d failures"), successes(), failures());
+    debug("Test results: [" GREEN("%d successes") ", "  RED("%d failures") "]", successes(), failures());
 
     if(failures() > 0)
         return failures();
@@ -69,7 +69,7 @@ void testHash1()
     debug("Stress testing hash table");
 
     hash.clear();
-    int key_count = 10000;
+    int key_count = 1000;
     char **keys = new char*[key_count];
     int *values = new int[key_count];
     long long int *timings = new long long int[key_count];
@@ -129,12 +129,6 @@ void testHash1()
 
     test(keys_okay, "HashTable::contains() found all of the keys", "HashTable::contains() lost some keys");
     test(values_okay, "HashTable::contains() found all of the values", "HashTable::contains() lost some values");
-
-
-    for(int i = 0; i < key_count; i++)
-    {
-        printf("%d %lld\n", i, timings[i]);
-    } 
 
     for(int i = 0; i < key_count; i++)
     {
