@@ -1,5 +1,5 @@
-#ifndef HASH_TABLE_H
-#define HASH_TABLE_H
+#ifndef CPP_HASH_TABLE_H
+#define CPP_HASH_TABLE_H
 
 #include "dbg.h"
 #include <openssl/md5.h>

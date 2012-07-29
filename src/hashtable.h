@@ -31,9 +31,12 @@ void ht_destroy(hash_table *table);
 
 void ht_insert(hash_table *table, void *key, uint key_size, void *value, uint value_size);
 void* ht_get(hash_table *table, void *key, uint key_size, uint *value_size);
+void ht_remove(hash_table *table, void *key, uint key_size);
+int ht_contains(hash_table *table, void *key, uint key_size);
 
 uint ht_size(hash_table *table);
 void** ht_keys(hash_table *table);
+void ht_clear(hash_table *table);
 
 uint ht_index(hash_table *table, void *key, uint key_size);
 

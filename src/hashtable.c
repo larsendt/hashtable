@@ -16,6 +16,8 @@ void ht_init(hash_table *table)
         table->array[i] = NULL;
     }
 
+    return;
+
 error:
     log_err("Failed to allocate memory in ht_init()");
 }
@@ -69,11 +71,12 @@ void ht_insert(hash_table *table, void *key, uint key_size, void *value, uint va
     if(he_key_compare(tmp, entry))
     {
         he_set_value(tmp, entry->value, entry->value_size);
-        table->collisions += 1;
+        he_destroy(entry);
     }
     else
     {
         tmp->next = entry;
+        table->collisions += 1;
     }
 }
 
@@ -94,9 +97,61 @@ void* ht_get(hash_table *table, void *key, uint key_size, uint *value_size)
 
             return entry->value;
         }
+        else
+        {
+            entry = entry->next;
+        }
     }
 
     return NULL;
+}
+
+void ht_remove(hash_table *table, void *key, uint key_size)
+{
+    uint index = ht_index(table, key, key_size);
+    hash_entry *entry = table->array[index];
+
+    hash_entry tmp;
+    tmp.key = key;
+    tmp.key_size = key_size;
+
+    while(entry != NULL)
+    {
+        if(he_key_compare(entry, &tmp))
+        {
+            if(entry->prev == NULL)
+                table->array[index] = entry->next;
+            else
+                entry->prev->next = entry->next;
+            
+            he_destroy(entry);
+            return;
+        }
+        else
+        {
+            entry = entry->next;
+        }
+    }
+}
+
+int ht_contains(hash_table *table, void *key, uint key_size)
+{
+    uint index = ht_index(table, key, key_size);
+    hash_entry *entry = table->array[index];
+    
+    hash_entry tmp;
+    tmp.key = key;
+    tmp.key_size = key_size;
+
+    while(entry != NULL)
+    {
+        if(he_key_compare(entry, &tmp))
+            return 1;
+        else
+            entry = entry->next;
+    }
+
+    return 0;
 }
 
 uint ht_size(hash_table *table)
@@ -106,9 +161,13 @@ uint ht_size(hash_table *table)
 
 void** ht_keys(hash_table *table)
 {
-    (void) table;
     log_err("NOT IMPLEMENTED");
     return NULL;
+}
+
+void ht_clear(hash_table *table)
+{
+    log_err("NOT IMPLEMENTED");
 }
 
 uint ht_index(hash_table *table, void *key, uint key_size)
@@ -192,6 +251,10 @@ void he_set_value(hash_entry *entry, void *value, uint value_size)
     entry->value = malloc(value_size);
     check_mem(entry->value);
     memcpy(entry->value, value, value_size);
+
+    entry->value_size = value_size;
+
+    return;
 
 error:
     log_err("Failed to set entry value");

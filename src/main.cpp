@@ -33,12 +33,7 @@ int main(int argc, char *argv[])
     testHash3();
     delim();
 
-    debug("Test results: [" GREEN("%d successes") ", "  RED("%d failures") "]", successes(), failures());
-
-    if(failures() > 0)
-        return failures();
-    else
-        return 0;
+    return report_results();
 }
 
 void testHash1()
