@@ -77,6 +77,9 @@ void ht_insert(hash_table *table, void *key, uint key_size, void *value, uint va
     {
         tmp->next = entry;
         table->collisions += 1;
+
+        if((double)table->collisions / table->array_size > 0.1)
+            ht_resize(table, table->array_size * 2);
     }
 }
 
@@ -159,15 +162,32 @@ uint ht_size(hash_table *table)
     return table->key_count;
 }
 
-void** ht_keys(hash_table *table)
+void** ht_keys(hash_table *table, uint *key_count)
 {
-    log_err("NOT IMPLEMENTED");
+    *key_count = 0;
+
+    uint i;
+    hash_entry *tmp;
+
+    for(i = 0; i < table->array_size; i++)
+    {
+        tmp = table->array[i];
+
+        while(tmp != NULL)
+        {
+            *key_count += 1;
+            tmp = tmp->next;
+        }
+    }
+
+    log_err("ht_keys is incomplete");
     return NULL;
 }
 
 void ht_clear(hash_table *table)
 {
-    log_err("NOT IMPLEMENTED");
+    ht_destroy(table);
+    ht_init(table);
 }
 
 uint ht_index(hash_table *table, void *key, uint key_size)
@@ -177,6 +197,42 @@ uint ht_index(hash_table *table, void *key, uint key_size)
     memcpy(&index, md5_hash, sizeof(index));
     index %= table->array_size;
     return index;
+}
+
+void ht_resize(hash_table *table, uint new_size)
+{
+    hash_table new_table;
+    new_table.array_size = new_size;
+    new_table.array = malloc(new_size * sizeof(hash_entry*));
+    new_table.key_count = 0;
+    new_table.collisions = 0;
+
+    uint i;
+    for(i = 0; i < new_table.array_size; i++)
+    {
+        new_table.array[i] = NULL;
+    }
+    
+    hash_entry *entry;
+    for(i = 0; i < table->array_size; i++)
+    {
+        entry = table->array[i];
+        while(entry != NULL)
+        {
+            ht_insert(&new_table, entry->key, entry->key_size,
+                    entry->value, entry->value_size);
+        
+            entry = entry->next;
+        }
+    }
+
+    ht_destroy(table);
+
+    table->array_size = new_table.array_size;
+    table->array = new_table.array;
+    table->key_count = new_table.key_count;
+    table->collisions = new_table.collisions;
+
 }
 
 //---------------------------------

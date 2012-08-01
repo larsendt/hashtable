@@ -10,13 +10,13 @@ static int FAIL_COUNT = 0;
 
 #define test_success(M, ...) { fprintf(stderr, "["GREEN("SUCCESS")"] " M "\n", ##__VA_ARGS__); SUCCESS_COUNT += 1; }
 #define test_fail(M, ...) { fprintf(stderr, "["RED("FAIL")"] " M "\n", ##__VA_ARGS__); FAIL_COUNT += 1; }
-#define test(A, M_OK, M_ERR, ...) if(A) { test_success(M_OK, ##__VA_ARGS__); } else { test_fail(M_ERR, ##__VA_ARGS__); }
+#define test(A, M, ...) if(A) { test_success(M, ##__VA_ARGS__); } else { test_fail(M, ##__VA_ARGS__); }
 
 #else
 
 #define test_success(M, ...)
 #define test_fail(M, ...)
-#define test(A, M_OK, M_ERR, ...)
+#define test(A, M, ...)
 
 #endif //TEST
 
