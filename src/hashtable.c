@@ -11,7 +11,8 @@ void ht_init(hash_table *table)
     table->key_count = 0;
     table->collisions = 0;
 
-    for(uint i = 0; i < table->array_size; i++)
+    uint i;
+    for(i = 0; i < table->array_size; i++)
     {
         table->array[i] = NULL;
     }

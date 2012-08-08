@@ -120,6 +120,8 @@ int main(int argc, char *argv[])
     test(ok_flag == 1, "Result was %d", ok_flag);
 
     ht_destroy(&ht);
+    free(many_keys);
+    free(many_values);
 
     return report_results();
 }

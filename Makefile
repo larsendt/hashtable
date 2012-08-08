@@ -1,23 +1,16 @@
 SRCDIR	= src
 OBJDIR	= obj
-CC 		= clang
-CPP		= clang++
-CFLAGS	= -Wall -Wextra -g -DDEBUG -DTEST 
-LFLAGS	= -L. -lhashtable -lcrypto -lrt
+CC 		= gcc
+CFLAGS	= -Wall -Wextra -g -DDEBUG -DTEST -pg
+LFLAGS	= -lcrypto -lrt -pg
 VERSION	= 0.1
 
-all: libhashtable.so hashtable-test
+all: hashtable-test
 
-hashtable-test: $(SRCDIR)/main.c $(SRCDIR)/hashtable.h libhashtable.so
-	$(CC) $(SRCDIR)/main.c $(LFLAGS) $(CFLAGS) -o hashtable-test
-
-libhashtable.so: hashtable.o 
-	$(CC) $(CFLAGS) -fPIC -shared $(OBJDIR)/hashtable.o -o libhashtable.so
-
-hashtable.o:
-	$(CC) $(CFLAGS) -fPIC -c $(SRCDIR)/hashtable.c -o $(OBJDIR)/hashtable.o
+hashtable-test: $(SRCDIR)/main.c $(SRCDIR)/hashtable.h $(SRCDIR)/hashtable.c
+	$(CC) $(SRCDIR)/main.c $(SRCDIR)/hashtable.c $(LFLAGS) $(CFLAGS) -o hashtable-test
 
 clean:
 	rm -f $(OBJDIR)/*.o
 	rm -f hashtable-test
-	rm -f libhashtable.so
+	rm -f libhashtable.a
