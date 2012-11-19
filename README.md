@@ -1,1 +1,2 @@
-A hashtable 
+A Simple Hashtable in C
+=======================
