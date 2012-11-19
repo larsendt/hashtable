@@ -1,6 +1,7 @@
 #include "hashtable.h"
-
 #include "dbg.h"
+#include "murmur.h"
+
 #include <stdlib.h>
 
 void ht_init(hash_table *table)
@@ -11,7 +12,7 @@ void ht_init(hash_table *table)
     table->key_count = 0;
     table->collisions = 0;
 
-    uint i;
+    uint32_t i;
     for(i = 0; i < table->array_size; i++)
     {
         table->array[i] = NULL;
@@ -25,7 +26,7 @@ error:
 
 void ht_destroy(hash_table *table)
 {
-    uint i;
+    uint32_t i;
     hash_entry *entry;
     hash_entry *tmp;
 
@@ -46,11 +47,11 @@ void ht_destroy(hash_table *table)
     free(table->array);
 }
 
-void ht_insert(hash_table *table, void *key, uint key_size, void *value, uint value_size)
+void ht_insert(hash_table *table, void *key, uint32_t key_size, void *value, uint32_t value_size)
 {
     hash_entry *entry = he_create(key, key_size, value, value_size); 
     hash_entry *tmp;
-    uint index;
+    uint32_t index;
 
     index = ht_index(table, key, key_size);
     tmp = table->array[index];
@@ -84,9 +85,9 @@ void ht_insert(hash_table *table, void *key, uint key_size, void *value, uint va
     }
 }
 
-void* ht_get(hash_table *table, void *key, uint key_size, uint *value_size)
+void* ht_get(hash_table *table, void *key, uint32_t key_size, uint32_t *value_size)
 {
-    uint index = ht_index(table, key, key_size);
+    uint32_t index = ht_index(table, key, key_size);
     hash_entry *entry = table->array[index];
     hash_entry tmp;
     tmp.key = key;
@@ -110,9 +111,9 @@ void* ht_get(hash_table *table, void *key, uint key_size, uint *value_size)
     return NULL;
 }
 
-void ht_remove(hash_table *table, void *key, uint key_size)
+void ht_remove(hash_table *table, void *key, uint32_t key_size)
 {
-    uint index = ht_index(table, key, key_size);
+    uint32_t index = ht_index(table, key, key_size);
     hash_entry *entry = table->array[index];
 
     hash_entry tmp;
@@ -138,9 +139,9 @@ void ht_remove(hash_table *table, void *key, uint key_size)
     }
 }
 
-int ht_contains(hash_table *table, void *key, uint key_size)
+int ht_contains(hash_table *table, void *key, uint32_t key_size)
 {
-    uint index = ht_index(table, key, key_size);
+    uint32_t index = ht_index(table, key, key_size);
     hash_entry *entry = table->array[index];
     
     hash_entry tmp;
@@ -158,16 +159,16 @@ int ht_contains(hash_table *table, void *key, uint key_size)
     return 0;
 }
 
-uint ht_size(hash_table *table)
+uint32_t ht_size(hash_table *table)
 {
     return table->key_count;
 }
 
-void** ht_keys(hash_table *table, uint *key_count)
+void** ht_keys(hash_table *table, uint32_t *key_count)
 {
     *key_count = 0;
 
-    uint i;
+    uint32_t i;
     hash_entry *tmp;
 
     for(i = 0; i < table->array_size; i++)
@@ -191,16 +192,17 @@ void ht_clear(hash_table *table)
     ht_init(table);
 }
 
-uint ht_index(hash_table *table, void *key, uint key_size)
+uint32_t ht_index(hash_table *table, void *key, uint32_t key_size)
 {
-    unsigned char *md5_hash = MD5(key, key_size, NULL);
-    uint index;
-    memcpy(&index, md5_hash, sizeof(index));
+    uint32_t hash[4];
+    MurmurHash3_x64_128(key, key_size, 0x123456, hash);
+
+    uint32_t index = hash[0] + hash[1] + hash[2] + hash[3];
     index %= table->array_size;
     return index;
 }
 
-void ht_resize(hash_table *table, uint new_size)
+void ht_resize(hash_table *table, uint32_t new_size)
 {
     hash_table new_table;
     new_table.array_size = new_size;
@@ -208,7 +210,7 @@ void ht_resize(hash_table *table, uint new_size)
     new_table.key_count = 0;
     new_table.collisions = 0;
 
-    uint i;
+    uint32_t i;
     for(i = 0; i < new_table.array_size; i++)
     {
         new_table.array[i] = NULL;
@@ -240,7 +242,7 @@ void ht_resize(hash_table *table, uint new_size)
 // hash_entry functions
 //---------------------------------
 
-hash_entry *he_create(void *key, uint key_size, void *value, uint value_size)
+hash_entry *he_create(void *key, uint32_t key_size, void *value, uint32_t value_size)
 {
     hash_entry *entry = malloc(sizeof(*entry));
     check_mem(entry);
@@ -284,7 +286,7 @@ void he_destroy(hash_entry *entry)
 
 int he_key_compare(hash_entry *e1, hash_entry *e2)
 {
-    uint i;
+    uint32_t i;
     char *k1 = e1->key;
     char *k2 = e2->key;
 
@@ -300,7 +302,7 @@ int he_key_compare(hash_entry *e1, hash_entry *e2)
     return 1;
 }
 
-void he_set_value(hash_entry *entry, void *value, uint value_size)
+void he_set_value(hash_entry *entry, void *value, uint32_t value_size)
 {
     if(entry->value)
         free(entry->value);
