@@ -14,9 +14,9 @@ int main(int argc, char *argv[])
     hash_table ht;
     ht_init(&ht);
 
-    char *s1 = (char*)"harp darp";
-    char *s2 = (char*)"NO";
-    char *s3 = (char*)"ODIN SAYS";
+    char *s1 = (char*)"teststring 1";
+    char *s2 = (char*)"teststring 2";
+    char *s3 = (char*)"teststring 3";
 
     ht_insert(&ht, s1, strlen(s1)+1, s2, strlen(s2)+1);
 
