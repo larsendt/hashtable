@@ -181,7 +181,7 @@ void** ht_keys(hash_table *table, uint *key_count)
         }
     }
 
-    log_err("ht_keys is incomplete");
+    log_err("ht_keys is not fully implemented");
     return NULL;
 }
 
