@@ -166,6 +166,8 @@ unsigned int ht_size(hash_table *table)
 
 void** ht_keys(hash_table *table, unsigned int *key_count)
 {
+    void **ret = malloc(table->key_count * sizeof(void *));
+    check_mem(ret);
     *key_count = 0;
 
     unsigned int i;
@@ -177,12 +179,15 @@ void** ht_keys(hash_table *table, unsigned int *key_count)
 
         while(tmp != NULL)
         {
+            ret[*key_count]=tmp->key;
             *key_count += 1;
             tmp = tmp->next;
+            check_debug(*key_count > table->key_count, "ht_keys: too many keys");
         }
     }
 
-    log_err("ht_keys is not fully implemented");
+    return ret;
+error:
     return NULL;
 }
 

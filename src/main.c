@@ -41,7 +41,9 @@ int main(int argc, char *argv[])
 
     keys = ht_keys(&ht, &num_keys);
     test(num_keys == 1, "HashTable has %d keys", num_keys);
-
+    test(keys != NULL, "Keys is not null");
+    if(keys)
+      free(keys);
     got = ht_get(&ht, s1, strlen(s1)+1, &value_size);
     
     debug("Value size: %zu", value_size);
@@ -59,6 +61,8 @@ int main(int argc, char *argv[])
 
     keys = ht_keys(&ht, &num_keys);
     test(num_keys == 0, "HashTable has %d keys", num_keys);
+    if(keys)
+      free(keys);
 
     debug("Stress test");
     int key_count = 1000000;
