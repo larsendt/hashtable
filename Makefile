@@ -2,7 +2,7 @@ SRCDIR	= src
 OBJDIR	= obj
 CC 		= gcc
 CFLAGS	= -Wall -Wextra -g -DDEBUG -DTEST 
-LFLAGS	= -lcrypto -lrt 
+LFLAGS	= -lrt 
 VERSION	= 0.1
 
 all: hashtable-test
