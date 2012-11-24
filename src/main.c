@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     (void) argv;
 
     hash_table ht;
-    ht_init(&ht);
+    ht_init(&ht, HT_KEY_CONST | HT_VALUE_CONST);
 
     char *s1 = (char*)"teststring 1";
     char *s2 = (char*)"teststring 2";
@@ -23,14 +23,14 @@ int main(int argc, char *argv[])
     int contains = ht_contains(&ht, s1, strlen(s1)+1);
     test(contains, "Checking for key \"%s\"", s1);
     
-    unsigned int value_size;
+    size_t value_size;
     char *got = ht_get(&ht, s1, strlen(s1)+1, &value_size);
     
-    debug("Value size: %u", value_size);
+    debug("Value size: %zu", value_size);
     debug("Got: {\"%s\": \"%s\"}", s1, got);
    
     test(value_size == strlen(s2)+1, 
-            "Value size was %u (desired %lu)", 
+            "Value size was %zu (desired %lu)",
             value_size, strlen(s2)+1);
 
     debug("Replacing {\"%s\": \"%s\"} with {\"%s\": \"%s\"}", s1, s2, s1, s3);
@@ -41,14 +41,16 @@ int main(int argc, char *argv[])
 
     keys = ht_keys(&ht, &num_keys);
     test(num_keys == 1, "HashTable has %d keys", num_keys);
-
+    test(keys != NULL, "Keys is not null");
+    if(keys)
+      free(keys);
     got = ht_get(&ht, s1, strlen(s1)+1, &value_size);
     
-    debug("Value size: %u", value_size);
+    debug("Value size: %zu", value_size);
     debug("Got: {\"%s\": \"%s\"}", s1, got);
    
     test(value_size == strlen(s3)+1, 
-            "Value size was %u (desired %lu)", 
+            "Value size was %zu (desired %lu)",
             value_size, strlen(s3)+1);
 
     debug("Removing entry with key \"%s\"", s1);
@@ -59,6 +61,8 @@ int main(int argc, char *argv[])
 
     keys = ht_keys(&ht, &num_keys);
     test(num_keys == 0, "HashTable has %d keys", num_keys);
+    if(keys)
+      free(keys);
 
     debug("Stress test");
     int key_count = 1000000;
@@ -95,7 +99,7 @@ int main(int argc, char *argv[])
     {
         if(ht_contains(&ht, &(many_keys[i]), sizeof(many_keys[i])))
         {
-            uint value_size;
+            size_t value_size;
             int value;
 
             value = *(int*)ht_get(&ht, &(many_keys[i]), sizeof(many_keys[i]), &value_size);
@@ -118,7 +122,23 @@ int main(int argc, char *argv[])
     
 
     test(ok_flag == 1, "Result was %d", ok_flag);
+    ht_clear(&ht);
+    ht_resize(&ht,2097152);
+    t1 = snap_time();
 
+    for(i = 0; i < key_count; i++)
+    {
+        ht_insert(&ht, &(many_keys[i]), sizeof(many_keys[i]), &(many_values[i]), sizeof(many_values[i]));
+    }
+
+    t2 = snap_time();
+
+    debug("Inserting %d keys (on preallocated table) took %.2f seconds", key_count, get_elapsed(t1, t2));
+    for(i = 0; i < key_count; i++)
+    {
+        ht_remove(&ht, &(many_keys[i]), sizeof(many_keys[i]));
+    }
+    test (ht_size(&ht) == 0, "%d keys remaining",ht_size(&ht));
     ht_destroy(&ht);
     free(many_keys);
     free(many_values);
