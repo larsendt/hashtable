@@ -12,7 +12,7 @@ void ht_init(hash_table *table)
     table->key_count = 0;
     table->collisions = 0;
 
-    uint32_t i;
+    unsigned int i;
     for(i = 0; i < table->array_size; i++)
     {
         table->array[i] = NULL;
@@ -26,7 +26,7 @@ error:
 
 void ht_destroy(hash_table *table)
 {
-    uint32_t i;
+    unsigned int i;
     hash_entry *entry;
     hash_entry *tmp;
 
@@ -47,11 +47,11 @@ void ht_destroy(hash_table *table)
     free(table->array);
 }
 
-void ht_insert(hash_table *table, void *key, uint32_t key_size, void *value, uint32_t value_size)
+void ht_insert(hash_table *table, void *key, size_t key_size, void *value, size_t value_size)
 {
     hash_entry *entry = he_create(key, key_size, value, value_size); 
     hash_entry *tmp;
-    uint32_t index;
+    unsigned int index;
 
     index = ht_index(table, key, key_size);
     tmp = table->array[index];
@@ -85,9 +85,9 @@ void ht_insert(hash_table *table, void *key, uint32_t key_size, void *value, uin
     }
 }
 
-void* ht_get(hash_table *table, void *key, uint32_t key_size, uint32_t *value_size)
+void* ht_get(hash_table *table, void *key, size_t key_size, size_t *value_size)
 {
-    uint32_t index = ht_index(table, key, key_size);
+    unsigned int index = ht_index(table, key, key_size);
     hash_entry *entry = table->array[index];
     hash_entry tmp;
     tmp.key = key;
@@ -111,9 +111,9 @@ void* ht_get(hash_table *table, void *key, uint32_t key_size, uint32_t *value_si
     return NULL;
 }
 
-void ht_remove(hash_table *table, void *key, uint32_t key_size)
+void ht_remove(hash_table *table, void *key, size_t key_size)
 {
-    uint32_t index = ht_index(table, key, key_size);
+    unsigned int index = ht_index(table, key, key_size);
     hash_entry *entry = table->array[index];
 
     hash_entry tmp;
@@ -139,9 +139,9 @@ void ht_remove(hash_table *table, void *key, uint32_t key_size)
     }
 }
 
-int ht_contains(hash_table *table, void *key, uint32_t key_size)
+int ht_contains(hash_table *table, void *key, size_t key_size)
 {
-    uint32_t index = ht_index(table, key, key_size);
+    unsigned int index = ht_index(table, key, key_size);
     hash_entry *entry = table->array[index];
     
     hash_entry tmp;
@@ -159,16 +159,16 @@ int ht_contains(hash_table *table, void *key, uint32_t key_size)
     return 0;
 }
 
-uint32_t ht_size(hash_table *table)
+unsigned int ht_size(hash_table *table)
 {
     return table->key_count;
 }
 
-void** ht_keys(hash_table *table, uint32_t *key_count)
+void** ht_keys(hash_table *table, unsigned int *key_count)
 {
     *key_count = 0;
 
-    uint32_t i;
+    unsigned int i;
     hash_entry *tmp;
 
     for(i = 0; i < table->array_size; i++)
@@ -192,7 +192,7 @@ void ht_clear(hash_table *table)
     ht_init(table);
 }
 
-uint32_t ht_index(hash_table *table, void *key, uint32_t key_size)
+unsigned int ht_index(hash_table *table, void *key, size_t key_size)
 {
     uint32_t hash[4];
     MurmurHash3_x64_128(key, key_size, 0x123456, hash);
@@ -202,7 +202,7 @@ uint32_t ht_index(hash_table *table, void *key, uint32_t key_size)
     return index;
 }
 
-void ht_resize(hash_table *table, uint32_t new_size)
+void ht_resize(hash_table *table, unsigned int new_size)
 {
     hash_table new_table;
     new_table.array_size = new_size;
@@ -210,7 +210,7 @@ void ht_resize(hash_table *table, uint32_t new_size)
     new_table.key_count = 0;
     new_table.collisions = 0;
 
-    uint32_t i;
+    unsigned int i;
     for(i = 0; i < new_table.array_size; i++)
     {
         new_table.array[i] = NULL;
@@ -242,7 +242,7 @@ void ht_resize(hash_table *table, uint32_t new_size)
 // hash_entry functions
 //---------------------------------
 
-hash_entry *he_create(void *key, uint32_t key_size, void *value, uint32_t value_size)
+hash_entry *he_create(void *key, size_t key_size, void *value, size_t value_size)
 {
     hash_entry *entry = malloc(sizeof(*entry));
     check_mem(entry);
@@ -302,7 +302,7 @@ int he_key_compare(hash_entry *e1, hash_entry *e2)
     return 1;
 }
 
-void he_set_value(hash_entry *entry, void *value, uint32_t value_size)
+void he_set_value(hash_entry *entry, void *value, size_t value_size)
 {
     if(entry->value)
         free(entry->value);

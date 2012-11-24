@@ -23,14 +23,14 @@ int main(int argc, char *argv[])
     int contains = ht_contains(&ht, s1, strlen(s1)+1);
     test(contains, "Checking for key \"%s\"", s1);
     
-    unsigned int value_size;
+    size_t value_size;
     char *got = ht_get(&ht, s1, strlen(s1)+1, &value_size);
     
-    debug("Value size: %u", value_size);
+    debug("Value size: %zu", value_size);
     debug("Got: {\"%s\": \"%s\"}", s1, got);
    
     test(value_size == strlen(s2)+1, 
-            "Value size was %u (desired %lu)", 
+            "Value size was %zu (desired %lu)",
             value_size, strlen(s2)+1);
 
     debug("Replacing {\"%s\": \"%s\"} with {\"%s\": \"%s\"}", s1, s2, s1, s3);
@@ -44,11 +44,11 @@ int main(int argc, char *argv[])
 
     got = ht_get(&ht, s1, strlen(s1)+1, &value_size);
     
-    debug("Value size: %u", value_size);
+    debug("Value size: %zu", value_size);
     debug("Got: {\"%s\": \"%s\"}", s1, got);
    
     test(value_size == strlen(s3)+1, 
-            "Value size was %u (desired %lu)", 
+            "Value size was %zu (desired %lu)",
             value_size, strlen(s3)+1);
 
     debug("Removing entry with key \"%s\"", s1);
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
     {
         if(ht_contains(&ht, &(many_keys[i]), sizeof(many_keys[i])))
         {
-            uint value_size;
+            size_t value_size;
             int value;
 
             value = *(int*)ht_get(&ht, &(many_keys[i]), sizeof(many_keys[i]), &value_size);
