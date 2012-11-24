@@ -286,20 +286,13 @@ void he_destroy(hash_entry *entry)
 
 int he_key_compare(hash_entry *e1, hash_entry *e2)
 {
-    uint32_t i;
     char *k1 = e1->key;
     char *k2 = e2->key;
 
     if(e1->key_size != e2->key_size)
         return 0;
 
-    for(i = 0; i < e1->key_size; i++)
-    {
-        if(k1[i] != k2[i])
-            return 0;
-    }
-
-    return 1;
+    return (memcmp(k1,k2,e1->key_size) == 0);
 }
 
 void he_set_value(hash_entry *entry, void *value, size_t value_size)
