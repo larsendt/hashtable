@@ -68,6 +68,9 @@ unsigned int ht_index(hash_table *table, void *key, size_t key_size);
 // and recomputes all of the keys
 void ht_resize(hash_table *table, unsigned int new_size);
 
+// sets the global security seed to be used in hash function
+void ht_set_seed(uint32_t seed);
+
 //----------------------------------
 // HashEntry functions
 //----------------------------------

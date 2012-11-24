@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 
+uint32_t global_seed = 2976579765;
+
 void ht_init(hash_table *table)
 {
     table->array_size = HT_INITIAL_SIZE;
@@ -212,7 +214,7 @@ void ht_clear(hash_table *table)
 unsigned int ht_index(hash_table *table, void *key, size_t key_size)
 {
     uint32_t index;
-    MurmurHash3_x86_32(key,key_size,0x123456, &index);
+    MurmurHash3_x86_32(key,key_size,global_seed, &index);
     index %= table->array_size;
     return index;
 }
@@ -251,6 +253,10 @@ void ht_resize(hash_table *table, unsigned int new_size)
     table->key_count = new_table.key_count;
     table->collisions = new_table.collisions;
 
+}
+
+void ht_set_seed(uint32_t seed){
+    global_seed = seed;
 }
 
 //---------------------------------
