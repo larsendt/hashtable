@@ -12,7 +12,6 @@ typedef struct hash_entry {
     size_t key_size;
     size_t value_size;
     struct hash_entry *next;
-    struct hash_entry *prev;
 } hash_entry;
 
 typedef struct hash_table {

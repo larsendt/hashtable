@@ -122,7 +122,7 @@ void ht_remove(hash_table *table, void *key, size_t key_size)
 {
     unsigned int index = ht_index(table, key, key_size);
     hash_entry *entry = table->array[index];
-
+    hash_entry *prev = NULL;
     hash_entry tmp;
     tmp.key = key;
     tmp.key_size = key_size;
@@ -131,19 +131,20 @@ void ht_remove(hash_table *table, void *key, size_t key_size)
     {
         if(he_key_compare(entry, &tmp))
         {
-            if(entry->prev == NULL)
+            if(prev == NULL)
                 table->array[index] = entry->next;
             else
-                entry->prev->next = entry->next;
+                prev->next = entry->next;
             
             table->key_count--;
-            if(entry->prev != NULL)
+            if(prev != NULL)
               table->collisions--;
             he_destroy(table->flags, entry);
             return;
         }
         else
         {
+            prev = entry;
             entry = entry->next;
         }
     }
@@ -291,7 +292,6 @@ hash_entry *he_create(int flags, void *key, size_t key_size, void *value, size_t
     }
 
     entry->next = NULL;
-    entry->prev = NULL;
 
     return entry;
 
