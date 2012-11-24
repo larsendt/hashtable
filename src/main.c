@@ -134,7 +134,11 @@ int main(int argc, char *argv[])
     t2 = snap_time();
 
     debug("Inserting %d keys (on preallocated table) took %.2f seconds", key_count, get_elapsed(t1, t2));
-
+    for(i = 0; i < key_count; i++)
+    {
+        ht_remove(&ht, &(many_keys[i]), sizeof(many_keys[i]));
+    }
+    test (ht_size(&ht) == 0, "%d keys remaining",ht_size(&ht));
     ht_destroy(&ht);
     free(many_keys);
     free(many_values);
