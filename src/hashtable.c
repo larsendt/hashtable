@@ -199,10 +199,8 @@ void ht_clear(hash_table *table)
 
 unsigned int ht_index(hash_table *table, void *key, size_t key_size)
 {
-    uint32_t hash[4];
-    MurmurHash3_x64_128(key, key_size, 0x123456, hash);
-
-    uint32_t index = hash[0] + hash[1] + hash[2] + hash[3];
+    uint32_t index;
+    MurmurHash3_x86_32(key,key_size,0x123456, &index);
     index %= table->array_size;
     return index;
 }
