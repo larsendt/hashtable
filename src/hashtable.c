@@ -55,10 +55,15 @@ void ht_destroy(hash_table *table)
 void ht_insert(hash_table *table, void *key, size_t key_size, void *value, size_t value_size)
 {
     hash_entry *entry = he_create(table->flags, key, key_size, value, value_size);
+    ht_insert_he(table, entry);
+}
+
+void ht_insert_he(hash_table *table, hash_entry *entry){
     hash_entry *tmp;
     unsigned int index;
 
-    index = ht_index(table, key, key_size);
+    entry->next = NULL;
+    index = ht_index(table, entry->key, entry->key_size);
     tmp = table->array[index];
 
     if(tmp == NULL)
@@ -231,6 +236,7 @@ void ht_resize(hash_table *table, unsigned int new_size)
     new_table.array = malloc(new_size * sizeof(hash_entry*));
     new_table.key_count = 0;
     new_table.collisions = 0;
+    new_table.flags = table->flags;
 
     unsigned int i;
     for(i = 0; i < new_table.array_size; i++)
@@ -239,16 +245,17 @@ void ht_resize(hash_table *table, unsigned int new_size)
     }
     
     hash_entry *entry;
+    hash_entry *next;
     for(i = 0; i < table->array_size; i++)
     {
         entry = table->array[i];
         while(entry != NULL)
         {
-            ht_insert(&new_table, entry->key, entry->key_size,
-                    entry->value, entry->value_size);
-        
-            entry = entry->next;
+            next = entry->next;
+            ht_insert_he(&new_table, entry);
+            entry = next;
         }
+        table->array[i]=NULL;
     }
 
     ht_destroy(table);

@@ -42,6 +42,9 @@ void ht_destroy(hash_table *table);
 // makes copies of both key and value
 void ht_insert(hash_table *table, void *key, size_t key_size, void *value, size_t value_size);
 
+// inserts an existing hash entry into the hash table
+void ht_insert_he(hash_table *table, hash_entry *entry);
+
 // returns a pointer to the value with the matching key, 
 // value_size is set to the size in bytes of the value
 void* ht_get(hash_table *table, void *key, size_t key_size, size_t *value_size);
