@@ -44,6 +44,7 @@ void ht_destroy(hash_table *table)
     
     table->array_size = 0;
     table->key_count = 0;
+    table->collisions = 0;
     free(table->array);
 }
 
@@ -59,6 +60,7 @@ void ht_insert(hash_table *table, void *key, size_t key_size, void *value, size_
     if(tmp == NULL)
     {
         table->array[index] = entry;
+        table->key_count++;
         return;
     }
 
@@ -79,6 +81,7 @@ void ht_insert(hash_table *table, void *key, size_t key_size, void *value, size_
     {
         tmp->next = entry;
         table->collisions += 1;
+        table->key_count ++;
 
         if((double)table->collisions / table->array_size > 0.1)
             ht_resize(table, table->array_size * 2);
@@ -129,6 +132,9 @@ void ht_remove(hash_table *table, void *key, size_t key_size)
             else
                 entry->prev->next = entry->next;
             
+            table->key_count--;
+            if(entry->prev != NULL)
+              table->collisions--;
             he_destroy(entry);
             return;
         }
@@ -166,7 +172,13 @@ unsigned int ht_size(hash_table *table)
 
 void** ht_keys(hash_table *table, unsigned int *key_count)
 {
-    void **ret = malloc(table->key_count * sizeof(void *));
+    void **ret;
+
+    if(table->key_count == 0){
+      *key_count = 0;
+      return NULL;
+    }
+    ret = malloc(table->key_count * sizeof(void *));
     check_mem(ret);
     *key_count = 0;
 
@@ -182,7 +194,7 @@ void** ht_keys(hash_table *table, unsigned int *key_count)
             ret[*key_count]=tmp->key;
             *key_count += 1;
             tmp = tmp->next;
-            check_debug(*key_count > table->key_count, "ht_keys: too many keys");
+            check_debug(*key_count >= table->key_count, "ht_keys: too many keys");
         }
     }
 
