@@ -20,14 +20,20 @@ typedef struct hash_table {
     unsigned int array_size;
     hash_entry **array;
     unsigned int collisions;
+    int flags;
 } hash_table;
+
+// HT flags
+#define HT_NONE 0
+#define HT_KEY_CONST 1
+#define HT_VALUE_CONST 2
 
 //----------------------------------
 // HashTable functions
 //----------------------------------
 
 // initializes the hash_table struct
-void ht_init(hash_table *table);
+void ht_init(hash_table *table, int flags);
 
 // destroys the hash_table struct 
 // and frees all relevant memory
@@ -75,11 +81,11 @@ void ht_set_seed(uint32_t seed);
 // HashEntry functions
 //----------------------------------
 
-hash_entry *he_create(void *key, size_t key_size, void *value, size_t value_size);
-void he_destroy(hash_entry *entry);
+hash_entry *he_create(int flags, void *key, size_t key_size, void *value, size_t value_size);
+void he_destroy(int flags, hash_entry *entry);
 
 int he_key_compare(hash_entry *e1, hash_entry *e2);
-void he_set_value(hash_entry *entry, void *value, size_t value_size);
+void he_set_value(int flags, hash_entry *entry, void *value, size_t value_size);
 
 #endif
         

@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     (void) argv;
 
     hash_table ht;
-    ht_init(&ht);
+    ht_init(&ht, HT_KEY_CONST | HT_VALUE_CONST);
 
     char *s1 = (char*)"teststring 1";
     char *s2 = (char*)"teststring 2";
@@ -122,6 +122,18 @@ int main(int argc, char *argv[])
     
 
     test(ok_flag == 1, "Result was %d", ok_flag);
+    ht_clear(&ht);
+    ht_resize(&ht,2097152);
+    t1 = snap_time();
+
+    for(i = 0; i < key_count; i++)
+    {
+        ht_insert(&ht, &(many_keys[i]), sizeof(many_keys[i]), &(many_values[i]), sizeof(many_values[i]));
+    }
+
+    t2 = snap_time();
+
+    debug("Inserting %d keys (on preallocated table) took %.2f seconds", key_count, get_elapsed(t1, t2));
 
     ht_destroy(&ht);
     free(many_keys);
