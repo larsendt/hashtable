@@ -1,3 +1,7 @@
+// License: BSD 3-clause
+// Author: Dane Larsen
+// See LICENSE.txt for the complete license text
+
 #ifndef TEST_H
 #define TEST_H
 

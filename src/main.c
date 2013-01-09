@@ -1,3 +1,7 @@
+// License: BSD 3-clause
+// Author: Dane Larsen
+// See LICENSE.txt for the complete license text
+
 #include "hashtable.h"
 #include "dbg.h"
 #include "test.h"
@@ -65,7 +69,7 @@ int main(int argc, char *argv[])
       free(keys);
 
     debug("Stress test");
-    int key_count = 1000000;
+    int key_count = 10000000;
     int i;
     int *many_keys = malloc(key_count * sizeof(*many_keys));
     int *many_values = malloc(key_count * sizeof(*many_values));
@@ -123,7 +127,7 @@ int main(int argc, char *argv[])
 
     test(ok_flag == 1, "Result was %d", ok_flag);
     ht_clear(&ht);
-    ht_resize(&ht,2097152);
+    ht_resize(&ht, 33554432);
     t1 = snap_time();
 
     for(i = 0; i < key_count; i++)

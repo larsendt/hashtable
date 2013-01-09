@@ -1,3 +1,7 @@
+// License: BSD 3-clause
+// Author: Dane Larsen
+// See LICENSE.txt for the complete license text
+
 #ifndef TIMER_H
 #define TIMER_H
 

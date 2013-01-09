@@ -1,3 +1,7 @@
+// License: BSD 3-clause
+// Author: Dane Larsen
+// See LICENSE.txt for the complete license text
+
 #include "hashtable.h"
 #include "dbg.h"
 #include "murmur.h"
