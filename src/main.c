@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     (void) argv;
 
     hash_table ht;
-    ht_init(&ht, HT_KEY_CONST | HT_VALUE_CONST);
+    ht_init(&ht, HT_KEY_CONST | HT_VALUE_CONST, 0.05);
 
     char *s1 = (char*)"teststring 1";
     char *s2 = (char*)"teststring 2";
@@ -26,20 +26,20 @@ int main(int argc, char *argv[])
 
     int contains = ht_contains(&ht, s1, strlen(s1)+1);
     test(contains, "Checking for key \"%s\"", s1);
-    
+
     size_t value_size;
     char *got = ht_get(&ht, s1, strlen(s1)+1, &value_size);
-    
+
     debug("Value size: %zu", value_size);
     debug("Got: {\"%s\": \"%s\"}", s1, got);
-   
-    test(value_size == strlen(s2)+1, 
+
+    test(value_size == strlen(s2)+1,
             "Value size was %zu (desired %lu)",
             value_size, strlen(s2)+1);
 
     debug("Replacing {\"%s\": \"%s\"} with {\"%s\": \"%s\"}", s1, s2, s1, s3);
     ht_insert(&ht, s1, strlen(s1)+1, s3, strlen(s3)+1);
-    
+
     unsigned int num_keys;
     void **keys;
 
@@ -49,11 +49,11 @@ int main(int argc, char *argv[])
     if(keys)
       free(keys);
     got = ht_get(&ht, s1, strlen(s1)+1, &value_size);
-    
+
     debug("Value size: %zu", value_size);
     debug("Got: {\"%s\": \"%s\"}", s1, got);
-   
-    test(value_size == strlen(s3)+1, 
+
+    test(value_size == strlen(s3)+1,
             "Value size was %zu (desired %lu)",
             value_size, strlen(s3)+1);
 
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
       free(keys);
 
     debug("Stress test");
-    int key_count = 10000000;
+    int key_count = 1000000;
     int i;
     int *many_keys = malloc(key_count * sizeof(*many_keys));
     int *many_values = malloc(key_count * sizeof(*many_values));
@@ -90,12 +90,11 @@ int main(int argc, char *argv[])
     for(i = 0; i < key_count; i++)
     {
         ht_insert(&ht, &(many_keys[i]), sizeof(many_keys[i]), &(many_values[i]), sizeof(many_values[i]));
-    }   
+    }
 
     t2 = snap_time();
 
     debug("Inserting %d keys took %.2f seconds", key_count, get_elapsed(t1, t2));
-
     debug("Checking inserted keys");
 
     int ok_flag = 1;
@@ -107,11 +106,11 @@ int main(int argc, char *argv[])
             int value;
 
             value = *(int*)ht_get(&ht, &(many_keys[i]), sizeof(many_keys[i]), &value_size);
-            
+
             if(value != many_values[i])
             {
-                log_warn("Key value mismatch. Got {%d: %d} expected: {%d: %d}", 
-                        many_keys[i], value, many_keys[i], many_values[i]); 
+                log_warn("Key value mismatch. Got {%d: %d} expected: {%d: %d}",
+                        many_keys[i], value, many_keys[i], many_values[i]);
                 ok_flag = 0;
                 break;
             }
@@ -123,11 +122,11 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    
+
 
     test(ok_flag == 1, "Result was %d", ok_flag);
     ht_clear(&ht);
-    ht_resize(&ht, 33554432);
+    ht_resize(&ht, 4194304);
     t1 = snap_time();
 
     for(i = 0; i < key_count; i++)
