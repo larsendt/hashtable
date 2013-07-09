@@ -3,10 +3,11 @@
 // See LICENSE.txt for the complete license text
 
 #include "hashtable.h"
-#include "dbg.h"
 #include "murmur.h"
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 uint32_t global_seed = 2976579765;
 
@@ -17,6 +18,16 @@ struct hash_entry {
     size_t value_size;
     struct hash_entry *next;
 };
+
+//----------------------------------
+// Debug macro
+//----------------------------------
+
+#ifdef DEBUG
+#define debug(M, ...) fprintf(stderr, "%s:%d - " M, __FILE__, __LINE__, ##__VA_ARGS__)
+#else
+#define debug(M, ...)
+#endif
 
 //----------------------------------
 // HashEntry functions
@@ -36,7 +47,9 @@ void ht_init(hash_table *table, ht_flags flags, double max_load_factor)
 {
     table->array_size = HT_INITIAL_SIZE;
     table->array = malloc(table->array_size * sizeof(*(table->array)));
-    check_mem(table->array);
+    if(table->array == NULL) {
+        debug("ht_init failed to allocate memory\n");
+    }
     table->key_count = 0;
     table->collisions = 0;
     table->flags = flags;
@@ -50,9 +63,6 @@ void ht_init(hash_table *table, ht_flags flags, double max_load_factor)
     }
 
     return;
-
-error:
-    log_err("Failed to allocate memory in ht_init()");
 }
 
 void ht_destroy(hash_table *table)
@@ -62,7 +72,7 @@ void ht_destroy(hash_table *table)
     hash_entry *tmp;
 
     if(table->array == NULL) {
-        debug("ht_destroy got a bad table");
+        debug("ht_destroy got a bad table\n");
     }
 
     // crawl the entries and delete them
@@ -242,7 +252,9 @@ void** ht_keys(hash_table *table, unsigned int *key_count)
 
     // array of pointers to keys
     ret = malloc(table->key_count * sizeof(void *));
-    check_mem(ret);
+    if(ret == NULL) {
+        debug("ht_keys failed to allocate memory\n");
+    }
     *key_count = 0;
 
     unsigned int i;
@@ -260,13 +272,13 @@ void** ht_keys(hash_table *table, unsigned int *key_count)
             *key_count += 1;
             tmp = tmp->next;
             // sanity check, should never actually happen
-            check_debug(*key_count >= table->key_count, "ht_keys: too many keys");
+            if(*key_count >= table->key_count) {
+                debug("ht_keys: too many keys, expected %d, got %d\n", table->key_count, *key_count);
+            }
         }
     }
 
     return ret;
-error:
-    return NULL;
 }
 
 void ht_clear(hash_table *table)
@@ -289,7 +301,7 @@ void ht_resize(hash_table *table, unsigned int new_size)
 {
     hash_table new_table;
 
-    debug("ht_resize(old=%d, new=%d)",table->array_size,new_size);
+    debug("ht_resize(old=%d, new=%d)\n",table->array_size,new_size);
     new_table.array_size = new_size;
     new_table.array = malloc(new_size * sizeof(hash_entry*));
     new_table.key_count = 0;
@@ -337,44 +349,43 @@ void ht_set_seed(uint32_t seed){
 hash_entry *he_create(int flags, void *key, size_t key_size, void *value, size_t value_size)
 {
     hash_entry *entry = malloc(sizeof(*entry));
-    check_mem(entry);
+    if(entry == NULL) {
+        debug("Failed to create hash_entry\n");
+        return NULL;
+    }
 
     entry->key_size = key_size;
     if (flags & HT_KEY_CONST){
         entry->key = key;
-    } else {
+    }
+    else {
         entry->key = malloc(key_size);
-        check_mem(entry->key);
+        if(entry->key == NULL) {
+            debug("Failed to create hash_entry\n");
+            free(entry);
+            return NULL;
+        }
         memcpy(entry->key, key, key_size);
     }
 
     entry->value_size = value_size;
     if (flags & HT_VALUE_CONST){
         entry->value = value;
-    } else {
+    }
+    else {
         entry->value = malloc(value_size);
-        check_mem(entry->value);
+        if(entry->value == NULL) {
+            debug("Failed to create hash_entry\n");
+            free(entry->key);
+            free(entry);
+            return NULL;
+        }
         memcpy(entry->value, value, value_size);
     }
 
     entry->next = NULL;
 
     return entry;
-
-error:
-    log_err("Failed to create hash_entry");
-
-    if(entry) {
-        if(entry->key)
-            free(entry->key);
-
-        if(entry->value)
-            free(entry->value);
-
-        free(entry);
-    }
-
-    return NULL;
 }
 
 void he_destroy(int flags, hash_entry *entry)
@@ -404,7 +415,10 @@ void he_set_value(int flags, hash_entry *entry, void *value, size_t value_size)
             free(entry->value);
 
         entry->value = malloc(value_size);
-        check_mem(entry->value);
+        if(entry->value == NULL) {
+            debug("Failed to set entry value\n");
+            return;
+        }
         memcpy(entry->value, value, value_size);
     } else {
         entry->value = value;
@@ -412,9 +426,6 @@ void he_set_value(int flags, hash_entry *entry, void *value, size_t value_size)
     entry->value_size = value_size;
 
     return;
-
-error:
-    log_err("Failed to set entry value");
 }
 
 
