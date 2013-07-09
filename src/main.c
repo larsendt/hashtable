@@ -1,4 +1,4 @@
-// License: BSD 3-clause
+// License: BSD 2-clause
 // Author: Dane Larsen
 // See LICENSE.txt for the complete license text
 

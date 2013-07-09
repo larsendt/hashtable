@@ -1,4 +1,4 @@
-// License: BSD 3-clause
+// License: BSD 2-clause
 // Author: Dane Larsen
 // See LICENSE.txt for the complete license text
 
@@ -28,7 +28,7 @@ int successes() { return SUCCESS_COUNT; }
 int failures() { return FAIL_COUNT; }
 
 int report_results()
-{ 
+{
     debug("Test results: [" GREEN("%d successes") ", "  RED("%d failures") "]", SUCCESS_COUNT, FAIL_COUNT);
 
     if(FAIL_COUNT > 0)

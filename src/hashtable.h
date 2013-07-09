@@ -1,5 +1,5 @@
 /// @file hashtable.h
-/// @copyright BSD 3-clause. See LICENSE.txt for the complete license text
+/// @copyright BSD 2-clause. See LICENSE.txt for the complete license text
 /// @author Dane Larsen
 
 #ifndef HASH_TABLE_H

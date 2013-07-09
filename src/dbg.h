@@ -1,4 +1,4 @@
-// License: BSD 3-clause
+// License: BSD 2-clause
 // Author: Dane Larsen
 // See LICENSE.txt for the complete license text
 
@@ -31,7 +31,7 @@
 #ifdef DEBUG
 #define debug(M, ...) fprintf(stderr, "[\033[22;34mDEBUG\033[0m] (\033[22;32m%s\033[0m :\033[22;32m%3d\033[0m : \033[22;32m%s\033[0m) " M "\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, ##__VA_ARGS__)
 #else
-#define debug(M, ...) 
+#define debug(M, ...)
 #endif
 
 #define clean_errno() (errno == 0 ? "None" : strerror(errno))
@@ -55,7 +55,7 @@
 #ifdef DEBUG
 #define debug(M, ...) fprintf(stderr, "[\033[22;34mDEBUG\033[0m] " M "\n", ##__VA_ARGS__)
 #else
-#define debug(M, ...) 
+#define debug(M, ...)
 #endif
 
 #define clean_errno() (errno == 0 ? "None" : strerror(errno))
@@ -79,4 +79,4 @@
 #define print_bits(c) fprintf(stderr, "0b"); for(int i = ((sizeof(c)*8)-1); i >= 0; i--) fprintf(stderr, "%x", (c>>i)&1); fprintf(stderr, "\n");
 
 #define delim() debug("==========================")
-#endif 
+#endif
