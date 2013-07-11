@@ -5,15 +5,15 @@
 #ifndef TEST_H
 #define TEST_H
 
+#include <stdio.h>
+
 static int SUCCESS_COUNT = 0;
 static int FAIL_COUNT = 0;
 
 #ifdef TEST
 
-#include "dbg.h"
-
-#define test_success(M, ...) { fprintf(stderr, "["GREEN("SUCCESS")"] " M "\n", ##__VA_ARGS__); SUCCESS_COUNT += 1; }
-#define test_fail(M, ...) { fprintf(stderr, "["RED("FAIL")"] " M "\n", ##__VA_ARGS__); FAIL_COUNT += 1; }
+#define test_success(M, ...) { fprintf(stderr, "[SUCCESS] " M "\n", ##__VA_ARGS__); SUCCESS_COUNT += 1; }
+#define test_fail(M, ...) { fprintf(stderr, "*** FAIL *** " M "\n\n", ##__VA_ARGS__); FAIL_COUNT += 1; }
 #define test(A, M, ...) if(A) { test_success(M, ##__VA_ARGS__); } else { test_fail(M, ##__VA_ARGS__); }
 
 #else
@@ -29,7 +29,7 @@ int failures() { return FAIL_COUNT; }
 
 int report_results()
 {
-    debug("Test results: [" GREEN("%d successes") ", "  RED("%d failures") "]", SUCCESS_COUNT, FAIL_COUNT);
+    fprintf(stderr, "Test results: [%d successes, %d failures]\n", SUCCESS_COUNT, FAIL_COUNT);
 
     if(FAIL_COUNT > 0)
         return FAIL_COUNT;
