@@ -1,6 +1,7 @@
 /// @file hashtable.h
 /// @copyright BSD 2-clause. See LICENSE.txt for the complete license text
 /// @author Dane Larsen
+/// @brief The primary header for the hashtable library. All public functions are defined here.
 
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
