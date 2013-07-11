@@ -1,6 +1,7 @@
-// License: BSD 2-clause
-// Author: Dane Larsen
-// See LICENSE.txt for the complete license text
+/// @cond PRIVATE
+/// @file hashtable.c
+/// @copyright BSD 2-clause. See LICENSE.txt for the complete license text
+/// @author Dane Larsen
 
 #include "hashtable.h"
 #include "murmur.h"
@@ -11,11 +12,19 @@
 
 uint32_t global_seed = 2976579765;
 
+
+/// The hash entry struct. Acts as a node in a linked list.
 struct hash_entry {
+    /// A pointer to the key.
     void *key;
+    /// A pointer to the value.
     void *value;
+    /// The size of the key in bytes.
     size_t key_size;
+    /// The size of the value in bytes.
     size_t value_size;
+    /// A pointer to the next hash entry in the chain (or NULL if none).
+    /// This is used for collision resolution.
     struct hash_entry *next;
 };
 
@@ -33,10 +42,32 @@ struct hash_entry {
 // HashEntry functions
 //----------------------------------
 
+/// @brief Creates a new hash entry.
+/// @param flags Hash table flags.
+/// @param key A pointer to the key.
+/// @param key_size The size of the key in bytes.
+/// @param value A pointer to the value.
+/// @param value_size The size of the value in bytes.
+/// @returns A pointer to the hash entry.
 hash_entry *he_create(int flags, void *key, size_t key_size, void *value, size_t value_size);
+
+/// @brief Destroys the hash entry and frees all associated memory.
+/// @param flags The hash table flags.
+/// @param hash_entry A pointer to the hash entry.
 void he_destroy(int flags, hash_entry *entry);
 
+/// @brief Compare two hash entries.
+/// @param e1 A pointer to the first entry.
+/// @param e2 A pointer to the second entry.
+/// @returns 1 if both the keys and the values of e1 and e2 match, 0 otherwise.
+///          This is a "deep" compare, rather than just comparing pointers.
 int he_key_compare(hash_entry *e1, hash_entry *e2);
+
+/// @brief Sets the value on an existing hash entry.
+/// @param flags The hashtable flags.
+/// @param entry A pointer to the hash entry.
+/// @param value A pointer to the new value.
+/// @param value_size The size of the new value in bytes.
 void he_set_value(int flags, hash_entry *entry, void *value, size_t value_size);
 
 //-----------------------------------

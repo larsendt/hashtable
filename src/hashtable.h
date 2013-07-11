@@ -11,8 +11,10 @@
 /// The initial size of the hash table.
 #define HT_INITIAL_SIZE 64
 
+/// The hash_entry struct. This is considered to be private
 typedef struct hash_entry hash_entry;
 
+/// The primary hashtable struct
 typedef struct hash_table {
     /// The number of keys in the hash table.
     unsigned int key_count;
@@ -31,6 +33,7 @@ typedef struct hash_table {
     double current_load_factor;
 } hash_table;
 
+/// Hashtable initialization flags (passed to ht_init)
 typedef enum {
     /// No options set
     HT_NONE = 0,
@@ -56,7 +59,7 @@ typedef enum {
 void ht_init(hash_table *table, ht_flags flags, double max_load_factor);
 
 /// @brief Destroys the hash_table struct and frees all relevant memory.
-/// @param A pointer to the hash table.
+/// @param table A pointer to the hash table.
 void ht_destroy(hash_table *table);
 
 /// @brief Inserts the {key: value} pair into the hash table, makes copies of both key and value.

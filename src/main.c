@@ -1,6 +1,8 @@
-// License: BSD 2-clause
-// Author: Dane Larsen
-// See LICENSE.txt for the complete license text
+/// @file main.c
+/// @copyright BSD 2-clause. See LICENSE.txt for the complete license text.
+/// @author Dane Larsen
+/// @brief The main function is used for testing the hashtable library,
+///        and also provides example code.
 
 #include "hashtable.h"
 #include "test.h"
