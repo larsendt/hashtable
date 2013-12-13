@@ -335,7 +335,12 @@ void** ht_keys(hash_table *table, unsigned int *key_count)
 void ht_clear(hash_table *table)
 {
     ht_destroy(table);
-    ht_init(table, table->flags, table->max_load_factor);
+
+    ht_init(table, table->flags, table->max_load_factor
+#ifndef __WITH_MURMUR
+    , table->hashfunc_x86_32, table->hashfunc_x86_128, table->hashfunc_x64_128
+#endif //__WITH_MURMUR
+    );
 }
 
 unsigned int ht_index(hash_table *table, void *key, size_t key_size)
