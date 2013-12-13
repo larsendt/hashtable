@@ -1,6 +1,6 @@
 SRCDIR	= src
 CC 		= gcc
-CFLAGS	= -Wall -Wextra -g -DDEBUG -DTEST
+CFLAGS	= -Wall -Wextra -g -DDEBUG -DTEST -D__WITH_MURMUR
 LFLAGS	= -lrt -L. -lhashtable
 
 all: hashtable-test hashtable-lib
