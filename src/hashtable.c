@@ -80,7 +80,7 @@ void he_set_value(int flags, hash_entry *entry, void *value, size_t value_size);
 
 void ht_init(hash_table *table, ht_flags flags, double max_load_factor
 #ifndef __WITH_MURMUR
-        , HashFunc for_x86_32, HashFunc for_x86_128, HashFunc for_x64_128
+        , HashFunc *for_x86_32, HashFunc *for_x86_128, HashFunc *for_x64_128
 #endif //__WITH_MURMUR
         )
 {
