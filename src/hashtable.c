@@ -53,7 +53,8 @@ struct hash_entry {
 /// @param value A pointer to the value.
 /// @param value_size The size of the value in bytes.
 /// @returns A pointer to the hash entry.
-hash_entry *he_create(int flags, void *key, size_t key_size, void *value, size_t value_size);
+hash_entry *he_create(int flags, void *key, size_t key_size, void *value,
+        size_t value_size);
 
 /// @brief Destroys the hash entry and frees all associated memory.
 /// @param flags The hash table flags.
@@ -144,9 +145,12 @@ void ht_destroy(hash_table *table)
     table->array = NULL;
 }
 
-void ht_insert(hash_table *table, void *key, size_t key_size, void *value, size_t value_size)
+void ht_insert(hash_table *table, void *key, size_t key_size, void *value,
+        size_t value_size)
 {
-    hash_entry *entry = he_create(table->flags, key, key_size, value, value_size);
+    hash_entry *entry = he_create(table->flags, key, key_size, value,
+            value_size);
+
     ht_insert_he(table, entry);
 }
 
@@ -196,9 +200,11 @@ void ht_insert_he(hash_table *table, hash_entry *entry){
 
         // double the size of the table if autoresize is on and the
         // load factor has gone too high
-        if(!(table->flags & HT_NO_AUTORESIZE) && (table->current_load_factor > table->max_load_factor)) {
+        if(!(table->flags & HT_NO_AUTORESIZE) &&
+                (table->current_load_factor > table->max_load_factor)) {
             ht_resize(table, table->array_size * 2);
-            table->current_load_factor = (double)table->collisions / table->array_size;
+            table->current_load_factor =
+                (double)table->collisions / table->array_size;
         }
     }
 }
@@ -324,7 +330,8 @@ void** ht_keys(hash_table *table, unsigned int *key_count)
             tmp = tmp->next;
             // sanity check, should never actually happen
             if(*key_count >= table->key_count) {
-                debug("ht_keys: too many keys, expected %d, got %d\n", table->key_count, *key_count);
+                debug("ht_keys: too many keys, expected %d, got %d\n",
+                        table->key_count, *key_count);
             }
         }
     }
@@ -402,7 +409,8 @@ void ht_set_seed(uint32_t seed){
 // hash_entry functions
 //---------------------------------
 
-hash_entry *he_create(int flags, void *key, size_t key_size, void *value, size_t value_size)
+hash_entry *he_create(int flags, void *key, size_t key_size, void *value,
+        size_t value_size)
 {
     hash_entry *entry = malloc(sizeof(*entry));
     if(entry == NULL) {
