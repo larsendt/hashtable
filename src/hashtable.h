@@ -30,32 +30,44 @@ typedef struct hash_table {
 
     /// The number of keys in the hash table.
     unsigned int key_count;
+
     /// The size of the internal array.
     unsigned int array_size;
+
     /// The internal hash table array.
     hash_entry **array;
+
     /// A count of the number of hash collisions.
     unsigned int collisions;
+
     /// Any flags that have been set. (See the ht_flags enum).
     int flags;
+
     /// The max load factor that is acceptable before an autoresize is triggered
     /// (where load_factor is the ratio of collisions to table size).
     double max_load_factor;
+
     /// The current load factor.
     double current_load_factor;
+
 } hash_table;
 
 /// Hashtable initialization flags (passed to ht_init)
 typedef enum {
+
     /// No options set
     HT_NONE = 0,
+
     /// Constant length key, useful if your keys are going to be a fixed size.
     HT_KEY_CONST = 1,
+
     /// Constant length value.
     HT_VALUE_CONST = 2,
+
     /// Don't automatically resize hashtable when the load factor
     /// goes above the trigger value
     HT_NO_AUTORESIZE = 4
+
 } ht_flags;
 
 //----------------------------------
