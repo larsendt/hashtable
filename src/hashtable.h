@@ -10,7 +10,9 @@
 #include <stddef.h>
 
 /// The initial size of the hash table.
+#ifndef HT_INITIAL_SIZE
 #define HT_INITIAL_SIZE 64
+#endif //HT_INITIAL_SIZE
 
 /// The hash_entry struct. This is considered to be private
 typedef struct hash_entry hash_entry;
