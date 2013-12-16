@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "hashfunc.h"
+
 /// The initial size of the hash table.
 #define HT_INITIAL_SIZE 64
 
@@ -17,6 +19,15 @@ typedef struct hash_entry hash_entry;
 
 /// The primary hashtable struct
 typedef struct hash_table {
+    // hash function for x86_32
+    HashFunc *hashfunc_x86_32;
+
+    // hash function for x86_128
+    HashFunc *hashfunc_x86_128;
+
+    // hash function for x64_128
+    HashFunc *hashfunc_x64_128;
+
     /// The number of keys in the hash table.
     unsigned int key_count;
     /// The size of the internal array.
@@ -57,7 +68,11 @@ typedef enum {
 /// @param max_load_factor The ratio of collisions:table_size before an autoresize is triggered
 ///        for example: if max_load_factor = 0.1, the table will resize if the number
 ///        of collisions increases beyond 1/10th of the size of the table
-void ht_init(hash_table *table, ht_flags flags, double max_load_factor);
+void ht_init(hash_table *table, ht_flags flags, double max_load_factor
+#ifndef __WITH_MURMUR
+        , HashFunc *for_x86_32, HashFunc *for_x86_128, HashFunc *for_x64_128
+#endif //__WITH_MURMUR
+        );
 
 /// @brief Destroys the hash_table struct and frees all relevant memory.
 /// @param table A pointer to the hash table.

@@ -1,9 +1,14 @@
 SRCDIR	= src
 CC 		= gcc
-CFLAGS	= -Wall -Wextra -g -DDEBUG -DTEST
+
+MURMUR  = -D__WITH_MURMUR
+CFLAGS	= -Wall -Wextra -g -DDEBUG -DTEST $(MURMUR)
 LFLAGS	= -lrt -L. -lhashtable
 
 all: hashtable-test hashtable-lib
+
+without_murmur:
+	$(MAKE) MURMUR= all
 
 hashtable-lib: $(SRCDIR)/hashtable.h $(SRCDIR)/hashtable.c $(SRCDIR)/murmur.h $(SRCDIR)/murmur.c
 	$(CC) $(CFLAGS) $(SRCDIR)/hashtable.c $(SRCDIR)/murmur.c -fPIC -rdynamic -shared -o libhashtable.so

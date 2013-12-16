@@ -4,7 +4,11 @@
 /// @author Dane Larsen
 
 #include "hashtable.h"
+#include "hashfunc.h"
+
+#ifdef __WITH_MURMUR
 #include "murmur.h"
+#endif //__WITH_MURMUR
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -74,8 +78,24 @@ void he_set_value(int flags, hash_entry *entry, void *value, size_t value_size);
 // HashTable functions
 //-----------------------------------
 
-void ht_init(hash_table *table, ht_flags flags, double max_load_factor)
+void ht_init(hash_table *table, ht_flags flags, double max_load_factor
+#ifndef __WITH_MURMUR
+        , HashFunc *for_x86_32, HashFunc *for_x86_128, HashFunc *for_x64_128
+#endif //__WITH_MURMUR
+        )
 {
+#ifdef __WITH_MURMUR
+    table->hashfunc_x86_32  = MurmurHash3_x86_32;
+    table->hashfunc_x86_128 = MurmurHash3_x86_128;
+    table->hashfunc_x64_128 = MurmurHash3_x64_128;
+
+#else //__WITH_MURMUR
+    table->hashfunc_x86_32  = for_x86_32;
+    table->hashfunc_x86_128 = for_x86_128;
+    table->hashfunc_x64_128 = for_x64_128;
+
+#endif //__WITH_MURMUR
+
     table->array_size = HT_INITIAL_SIZE;
     table->array = malloc(table->array_size * sizeof(*(table->array)));
     if(table->array == NULL) {
@@ -315,14 +335,19 @@ void** ht_keys(hash_table *table, unsigned int *key_count)
 void ht_clear(hash_table *table)
 {
     ht_destroy(table);
-    ht_init(table, table->flags, table->max_load_factor);
+
+    ht_init(table, table->flags, table->max_load_factor
+#ifndef __WITH_MURMUR
+    , table->hashfunc_x86_32, table->hashfunc_x86_128, table->hashfunc_x64_128
+#endif //__WITH_MURMUR
+    );
 }
 
 unsigned int ht_index(hash_table *table, void *key, size_t key_size)
 {
     uint32_t index;
     // 32 bits of murmur seems to fare pretty well
-    MurmurHash3_x86_32(key, key_size, global_seed, &index);
+    table->hashfunc_x86_32(key, key_size, global_seed, &index);
     index %= table->array_size;
     return index;
 }
