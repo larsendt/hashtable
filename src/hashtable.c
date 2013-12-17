@@ -358,6 +358,9 @@ void ht_resize(hash_table *table, unsigned int new_size)
     hash_table new_table;
 
     debug("ht_resize(old=%d, new=%d)\n",table->array_size,new_size);
+    new_table.hashfunc_x86_32 = table->hashfunc_x86_32;
+    new_table.hashfunc_x86_128 = table->hashfunc_x86_128;
+    new_table.hashfunc_x64_128 = table->hashfunc_x64_128;
     new_table.array_size = new_size;
     new_table.array = malloc(new_size * sizeof(hash_entry*));
     new_table.key_count = 0;
