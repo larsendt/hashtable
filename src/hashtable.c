@@ -21,12 +21,16 @@ uint32_t global_seed = 2976579765;
 struct hash_entry {
     /// A pointer to the key.
     void *key;
+
     /// A pointer to the value.
     void *value;
+
     /// The size of the key in bytes.
     size_t key_size;
+
     /// The size of the value in bytes.
     size_t value_size;
+
     /// A pointer to the next hash entry in the chain (or NULL if none).
     /// This is used for collision resolution.
     struct hash_entry *next;
@@ -53,7 +57,8 @@ struct hash_entry {
 /// @param value A pointer to the value.
 /// @param value_size The size of the value in bytes.
 /// @returns A pointer to the hash entry.
-hash_entry *he_create(int flags, void *key, size_t key_size, void *value, size_t value_size);
+hash_entry *he_create(int flags, void *key, size_t key_size, void *value,
+        size_t value_size);
 
 /// @brief Destroys the hash entry and frees all associated memory.
 /// @param flags The hash table flags.
@@ -96,16 +101,18 @@ void ht_init(hash_table *table, ht_flags flags, double max_load_factor
 
 #endif //__WITH_MURMUR
 
-    table->array_size = HT_INITIAL_SIZE;
-    table->array = malloc(table->array_size * sizeof(*(table->array)));
+    table->array_size   = HT_INITIAL_SIZE;
+    table->array        = malloc(table->array_size * sizeof(*(table->array)));
+
     if(table->array == NULL) {
         debug("ht_init failed to allocate memory\n");
     }
-    table->key_count = 0;
-    table->collisions = 0;
-    table->flags = flags;
-    table->max_load_factor = max_load_factor;
-    table->current_load_factor = 0.0;
+
+    table->key_count            = 0;
+    table->collisions           = 0;
+    table->flags                = flags;
+    table->max_load_factor      = max_load_factor;
+    table->current_load_factor  = 0.0;
 
     unsigned int i;
     for(i = 0; i < table->array_size; i++)
@@ -137,16 +144,20 @@ void ht_destroy(hash_table *table)
         }
     }
 
-    table->array_size = 0;
-    table->key_count = 0;
-    table->collisions = 0;
+    table->array_size   = 0;
+    table->key_count    = 0;
+    table->collisions   = 0;
+
     free(table->array);
     table->array = NULL;
 }
 
-void ht_insert(hash_table *table, void *key, size_t key_size, void *value, size_t value_size)
+void ht_insert(hash_table *table, void *key, size_t key_size, void *value,
+        size_t value_size)
 {
-    hash_entry *entry = he_create(table->flags, key, key_size, value, value_size);
+    hash_entry *entry = he_create(table->flags, key, key_size, value,
+            value_size);
+
     ht_insert_he(table, entry);
 }
 
@@ -196,20 +207,22 @@ void ht_insert_he(hash_table *table, hash_entry *entry){
 
         // double the size of the table if autoresize is on and the
         // load factor has gone too high
-        if(!(table->flags & HT_NO_AUTORESIZE) && (table->current_load_factor > table->max_load_factor)) {
+        if(!(table->flags & HT_NO_AUTORESIZE) &&
+                (table->current_load_factor > table->max_load_factor)) {
             ht_resize(table, table->array_size * 2);
-            table->current_load_factor = (double)table->collisions / table->array_size;
+            table->current_load_factor =
+                (double)table->collisions / table->array_size;
         }
     }
 }
 
 void* ht_get(hash_table *table, void *key, size_t key_size, size_t *value_size)
 {
-    unsigned int index = ht_index(table, key, key_size);
-    hash_entry *entry = table->array[index];
+    unsigned int index  = ht_index(table, key, key_size);
+    hash_entry *entry   = table->array[index];
     hash_entry tmp;
-    tmp.key = key;
-    tmp.key_size = key_size;
+    tmp.key             = key;
+    tmp.key_size        = key_size;
 
     // once we have the right index, walk down the chain (if any)
     // until we find the right key or hit the end
@@ -233,12 +246,12 @@ void* ht_get(hash_table *table, void *key, size_t key_size, size_t *value_size)
 
 void ht_remove(hash_table *table, void *key, size_t key_size)
 {
-    unsigned int index = ht_index(table, key, key_size);
-    hash_entry *entry = table->array[index];
-    hash_entry *prev = NULL;
+    unsigned int index  = ht_index(table, key, key_size);
+    hash_entry *entry   = table->array[index];
+    hash_entry *prev    = NULL;
     hash_entry tmp;
-    tmp.key = key;
-    tmp.key_size = key_size;
+    tmp.key             = key;
+    tmp.key_size        = key_size;
 
     // walk down the chain
     while(entry != NULL)
@@ -253,8 +266,10 @@ void ht_remove(hash_table *table, void *key, size_t key_size)
                 prev->next = entry->next;
 
             table->key_count--;
+
             if(prev != NULL)
               table->collisions--;
+
             he_destroy(table->flags, entry);
             return;
         }
@@ -268,12 +283,11 @@ void ht_remove(hash_table *table, void *key, size_t key_size)
 
 int ht_contains(hash_table *table, void *key, size_t key_size)
 {
-    unsigned int index = ht_index(table, key, key_size);
-    hash_entry *entry = table->array[index];
-
+    unsigned int index  = ht_index(table, key, key_size);
+    hash_entry *entry   = table->array[index];
     hash_entry tmp;
-    tmp.key = key;
-    tmp.key_size = key_size;
+    tmp.key             = key;
+    tmp.key_size        = key_size;
 
     // walk down the chain, compare keys
     while(entry != NULL)
@@ -324,7 +338,8 @@ void** ht_keys(hash_table *table, unsigned int *key_count)
             tmp = tmp->next;
             // sanity check, should never actually happen
             if(*key_count >= table->key_count) {
-                debug("ht_keys: too many keys, expected %d, got %d\n", table->key_count, *key_count);
+                debug("ht_keys: too many keys, expected %d, got %d\n",
+                        table->key_count, *key_count);
             }
         }
     }
@@ -358,12 +373,13 @@ void ht_resize(hash_table *table, unsigned int new_size)
     hash_table new_table;
 
     debug("ht_resize(old=%d, new=%d)\n",table->array_size,new_size);
-    new_table.array_size = new_size;
-    new_table.array = malloc(new_size * sizeof(hash_entry*));
-    new_table.key_count = 0;
-    new_table.collisions = 0;
-    new_table.flags = table->flags;
-    new_table.max_load_factor = table->max_load_factor;
+
+    new_table.array_size        = new_size;
+    new_table.array             = malloc(new_size * sizeof(hash_entry*));
+    new_table.key_count         = 0;
+    new_table.collisions        = 0;
+    new_table.flags             = table->flags;
+    new_table.max_load_factor   = table->max_load_factor;
 
     unsigned int i;
     for(i = 0; i < new_table.array_size; i++)
@@ -387,10 +403,10 @@ void ht_resize(hash_table *table, unsigned int new_size)
 
     ht_destroy(table);
 
-    table->array_size = new_table.array_size;
-    table->array = new_table.array;
-    table->key_count = new_table.key_count;
-    table->collisions = new_table.collisions;
+    table->array_size   = new_table.array_size;
+    table->array        = new_table.array;
+    table->key_count    = new_table.key_count;
+    table->collisions   = new_table.collisions;
 
 }
 
@@ -402,7 +418,8 @@ void ht_set_seed(uint32_t seed){
 // hash_entry functions
 //---------------------------------
 
-hash_entry *he_create(int flags, void *key, size_t key_size, void *value, size_t value_size)
+hash_entry *he_create(int flags, void *key, size_t key_size, void *value,
+        size_t value_size)
 {
     hash_entry *entry = malloc(sizeof(*entry));
     if(entry == NULL) {
@@ -466,7 +483,7 @@ int he_key_compare(hash_entry *e1, hash_entry *e2)
 
 void he_set_value(int flags, hash_entry *entry, void *value, size_t value_size)
 {
-    if (!(flags & HT_VALUE_CONST)){
+    if (!(flags & HT_VALUE_CONST)) {
         if(entry->value)
             free(entry->value);
 
