@@ -144,10 +144,12 @@ void ht_destroy(hash_table *table)
         }
     }
 
-    table->array_size   = 0;
-    table->key_count    = 0;
-    table->collisions   = 0;
-
+    table->hashfunc_x86_32 = NULL;
+    table->hashfunc_x86_128 = NULL;
+    table->hashfunc_x64_128 = NULL;
+    table->array_size = 0;
+    table->key_count = 0;
+    table->collisions = 0;
     free(table->array);
     table->array = NULL;
 }
@@ -373,13 +375,15 @@ void ht_resize(hash_table *table, unsigned int new_size)
     hash_table new_table;
 
     debug("ht_resize(old=%d, new=%d)\n",table->array_size,new_size);
-
-    new_table.array_size        = new_size;
-    new_table.array             = malloc(new_size * sizeof(hash_entry*));
-    new_table.key_count         = 0;
-    new_table.collisions        = 0;
-    new_table.flags             = table->flags;
-    new_table.max_load_factor   = table->max_load_factor;
+    new_table.hashfunc_x86_32 = table->hashfunc_x86_32;
+    new_table.hashfunc_x86_128 = table->hashfunc_x86_128;
+    new_table.hashfunc_x64_128 = table->hashfunc_x64_128;
+    new_table.array_size = new_size;
+    new_table.array = malloc(new_size * sizeof(hash_entry*));
+    new_table.key_count = 0;
+    new_table.collisions = 0;
+    new_table.flags = table->flags;
+    new_table.max_load_factor = table->max_load_factor;
 
     unsigned int i;
     for(i = 0; i < new_table.array_size; i++)
@@ -403,10 +407,13 @@ void ht_resize(hash_table *table, unsigned int new_size)
 
     ht_destroy(table);
 
-    table->array_size   = new_table.array_size;
-    table->array        = new_table.array;
-    table->key_count    = new_table.key_count;
-    table->collisions   = new_table.collisions;
+    table->hashfunc_x86_32 = new_table.hashfunc_x86_32;
+    table->hashfunc_x86_128 = new_table.hashfunc_x86_128;
+    table->hashfunc_x64_128 = new_table.hashfunc_x64_128;
+    table->array_size = new_table.array_size;
+    table->array = new_table.array;
+    table->key_count = new_table.key_count;
+    table->collisions = new_table.collisions;
 
 }
 
