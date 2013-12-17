@@ -137,6 +137,9 @@ void ht_destroy(hash_table *table)
         }
     }
 
+    table->hashfunc_x86_32 = NULL;
+    table->hashfunc_x86_128 = NULL;
+    table->hashfunc_x64_128 = NULL;
     table->array_size = 0;
     table->key_count = 0;
     table->collisions = 0;
@@ -390,6 +393,9 @@ void ht_resize(hash_table *table, unsigned int new_size)
 
     ht_destroy(table);
 
+    table->hashfunc_x86_32 = new_table.hashfunc_x86_32;
+    table->hashfunc_x86_128 = new_table.hashfunc_x86_128;
+    table->hashfunc_x64_128 = new_table.hashfunc_x64_128;
     table->array_size = new_table.array_size;
     table->array = new_table.array;
     table->key_count = new_table.key_count;
